@@ -33,8 +33,11 @@ export const POST = async (req: NextRequest) => {
     if (!userExists) {
       return NextResponse.json("User does not exist", { status: 404 });
     }
-    const isPassworMatch = await bcrypt.compare(password, userExists.password);
-    if (!isPassworMatch) {
+    if (!userExists.isVerified) {
+      return NextResponse.json("User is not verified", { status: 403 });
+    }
+    const isPasswordMatch = await bcrypt.compare(password, userExists.password);
+    if (!isPasswordMatch) {
       return NextResponse.json("wrong password, try again!", { status: 401 });
     }
     const token = await jwt.sign(

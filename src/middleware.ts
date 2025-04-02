@@ -3,7 +3,11 @@ import { NextRequest, NextResponse } from "next/server";
 import { jwtVerify } from "jose";
 export const middleware = async (req: NextRequest) => {
   try {
-    const exceptionRoutes = ["/api/auth/login", "/api/auth/registration"];
+    const exceptionRoutes = [
+      "/api/auth/login",
+      "/api/auth/registration",
+      "/api/auth/verification",
+    ];
     if (
       exceptionRoutes.length > 0 &&
       exceptionRoutes.includes(req.nextUrl.pathname)

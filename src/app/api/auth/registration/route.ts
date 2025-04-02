@@ -1,5 +1,6 @@
 import { userModel } from "@/app/models/user.model";
 import { dbConnect } from "@/app/utils/conn";
+import { sendOTP } from "@/app/utils/sendOTP";
 import { validateUserDataFromBody, zUser } from "@/app/zod/validator";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
@@ -16,6 +17,8 @@ export const POST = async (req: NextRequest) => {
   try {
     const body: IBODY = await req.json();
     const { firstName, lastName, email, password, confirmPassword } = body;
+    const otp = Math.floor(Math.random() * 100000 + 899999);
+
     if (password !== confirmPassword)
       return NextResponse.json(
         { message: "passwords don't match, please try again!" },
@@ -40,9 +43,13 @@ export const POST = async (req: NextRequest) => {
       lastName,
       email,
       password,
+      verificationCode: otp,
+      verificationCodeExpiry: Date.now() + 1000 * 60 * 5,
     });
+
     await newUser.save();
-    //send otp to the email address later
+    // await sendOTP(newUser.email, "mail sent", otp).catch(console.error);
+
     return NextResponse.json(
       { message: "User created successfully" },
       { status: 201 }
